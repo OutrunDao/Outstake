@@ -19,7 +19,7 @@ contract RUY is IRUY, ERC20, Initializable, Ownable, GasManagerable {
         _;
     }
 
-    constructor(address owner, address gasManager) ERC20("Outrun USD yield token", "RUY") Ownable(owner) GasManagerable(gasManager) {}
+    constructor(address owner, address gasManager_) ERC20("Outrun USD yield token", "RUY") Ownable(owner) GasManagerable(gasManager_) {}
 
     function ORUSDStakeManager() external view override returns (address) {
         return _orUSDStakeManager;

@@ -7,9 +7,9 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
   * @title ORETH interface
   */
 interface IORETH is IERC20 {
-	struct FlashLoanFee {
-        uint256 providerFeeRate;
-        uint256 protocolFeeRate;
+	struct FlashLoanFeeRate {
+        uint128 providerFeeRate;
+        uint128 protocolFeeRate;
     }
 
 
@@ -26,16 +26,16 @@ interface IORETH is IERC20 {
 
     function revenuePool() external view returns (address);
 
-    function protocolFee() external view returns (uint256);
+    function protocolFeeRate() external view returns (uint256);
 
-    function flashLoanFee() external view returns (FlashLoanFee memory);
+    function flashLoanFeeRate() external view returns (FlashLoanFeeRate memory);
 
 
     function setAutoBot(address _bot) external;
 
-    function setProtocolFee(uint256 protocolFee_) external;
+    function setProtocolFeeRate(uint256 protocolFeeRate_) external;
 
-    function setFlashLoanFee(uint256 _providerFeeRate, uint256 _protocolFeeRate) external;
+    function setFlashLoanFeeRate(uint128 _providerFeeRate, uint128 _protocolFeeRate) external;
 
     function setRevenuePool(address _pool) external;
 
@@ -59,9 +59,9 @@ interface IORETH is IERC20 {
 
 	event SetRevenuePool(address _pool);
 
-	event SetProtocolFee(uint256 protocolFee_);
+	event SetProtocolFeeRate(uint256 protocolFeeRate_);
 
-	event SetFlashLoanFee(uint256 _providerFeeRate, uint256 _protocolFeeRate);
+	event SetFlashLoanFeeRate(uint128 _providerFeeRate, uint128 _protocolFeeRate);
 
 	event Deposit(address indexed _account, uint256 _amount);
 
@@ -69,5 +69,5 @@ interface IORETH is IERC20 {
 
 	event AccumETHYield(uint256 amount, uint256 dayRate);
 
-    event FlashLoan(address indexed receiver, uint256 amount);
+    event FlashLoan(address indexed receiver, uint256 amount, uint256 providerFeeAmount, uint256 protocolFeeAmount);
 }

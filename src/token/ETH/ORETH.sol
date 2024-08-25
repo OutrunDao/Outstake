@@ -24,32 +24,32 @@ contract ORETH is IORETH, ERC20, Initializable, ReentrancyGuard, Ownable, GasMan
     address private _autoBot;
     address private _orETHStakeManager;
     address private _revenuePool;
-    uint256 private _protocolFee;
-    FlashLoanFee private _flashLoanFee;
+    uint256 private _protocolFeeRate;
+    FlashLoanFeeRate private _flashLoanFeeRate;
 
     /**
      * @param owner - Address of owner
-     * @param gasManager - Address of gas manager
+     * @param gasManager_ - Address of gas manager
      * @param autoBot_ - Address of autoBot
      * @param revenuePool_ - Address of revenue pool
-     * @param protocolFee_ - Protocol fee rate
-     * @param providerFeeRate_ - Flashloan provider fee rate
-     * @param protocolFeeRate_ - Flashloan protocol fee rate
+     * @param protocolFeeRate_ - Protocol fee rate
+     * @param flashLoanProviderFeeRate_ - Flashloan provider fee rate
+     * @param flashLoanProtocolFeeRate_ - Flashloan protocol fee rate
      */
     constructor(
         address owner, 
-        address gasManager,
+        address gasManager_,
         address autoBot_,
         address revenuePool_, 
         address pointsOperator,
-        uint256 protocolFee_, 
-        uint256 providerFeeRate_, 
-        uint256 protocolFeeRate_
-    ) ERC20("Outrun ETH", "orETH") Ownable(owner) GasManagerable(gasManager) {
+        uint256 protocolFeeRate_, 
+        uint128 flashLoanProviderFeeRate_, 
+        uint128 flashLoanProtocolFeeRate_
+    ) ERC20("Outrun ETH", "orETH") Ownable(owner) GasManagerable(gasManager_) {
         setAutoBot(autoBot_);
         setRevenuePool(revenuePool_);
-        setProtocolFee(protocolFee_);
-        setFlashLoanFee(providerFeeRate_, protocolFeeRate_);
+        setProtocolFeeRate(protocolFeeRate_);
+        setFlashLoanFeeRate(flashLoanProviderFeeRate_, flashLoanProtocolFeeRate_);
         IBlastPoints(BLAST_POINTS).configurePointsOperator(pointsOperator);
     }
 
@@ -65,12 +65,12 @@ contract ORETH is IORETH, ERC20, Initializable, ReentrancyGuard, Ownable, GasMan
         return _revenuePool;
     }
 
-    function protocolFee() external view returns (uint256) {
-        return _protocolFee;
+    function protocolFeeRate() external view returns (uint256) {
+        return _protocolFeeRate;
     }
 
-    function flashLoanFee() external view returns (FlashLoanFee memory) {
-        return _flashLoanFee;
+    function flashLoanFeeRate() external view returns (FlashLoanFeeRate memory) {
+        return _flashLoanFeeRate;
     }
 
 
@@ -89,18 +89,18 @@ contract ORETH is IORETH, ERC20, Initializable, ReentrancyGuard, Ownable, GasMan
         emit SetRevenuePool(_pool);
     }
 
-    function setProtocolFee(uint256 protocolFee_) public override onlyOwner {
-        require(protocolFee_ <= RATIO, FeeRateOverflow());
+    function setProtocolFeeRate(uint256 protocolFeeRate_) public override onlyOwner {
+        require(protocolFeeRate_ <= RATIO, FeeRateOverflow());
 
-        _protocolFee = protocolFee_;
-        emit SetProtocolFee(protocolFee_);
+        _protocolFeeRate = protocolFeeRate_;
+        emit SetProtocolFeeRate(protocolFeeRate_);
     }
 
-    function setFlashLoanFee(uint256 _providerFeeRate, uint256 _protocolFeeRate) public override onlyOwner {
-        require(_providerFeeRate + _protocolFeeRate <= RATIO, FeeRateOverflow());
+    function setFlashLoanFeeRate(uint128 providerFeeRate_, uint128 protocolFeeRate_) public override onlyOwner {
+        require(providerFeeRate_ + protocolFeeRate_ <= RATIO, FeeRateOverflow());
 
-        _flashLoanFee = FlashLoanFee(_providerFeeRate, _protocolFeeRate);
-        emit SetFlashLoanFee(_providerFeeRate, _protocolFeeRate);
+        _flashLoanFeeRate = FlashLoanFeeRate(providerFeeRate_, protocolFeeRate_);
+        emit SetFlashLoanFeeRate(providerFeeRate_, protocolFeeRate_);
     }
 
     /**
@@ -147,10 +147,11 @@ contract ORETH is IORETH, ERC20, Initializable, ReentrancyGuard, Ownable, GasMan
 
         nativeYield = BLAST.claimAllYield(address(this), address(this));
         if (nativeYield > 0) {
-            if (_protocolFee > 0) {
+            uint256 protocolFeeRate_ = _protocolFeeRate;
+            if (protocolFeeRate_ > 0) {
                 uint256 feeAmount;
                 unchecked {
-                    feeAmount = nativeYield * _protocolFee / RATIO;
+                    feeAmount = nativeYield * protocolFeeRate_ / RATIO;
                     nativeYield -= feeAmount;
                 }
 
@@ -185,8 +186,8 @@ contract ORETH is IORETH, ERC20, Initializable, ReentrancyGuard, Ownable, GasMan
             uint256 providerFeeAmount;
             uint256 protocolFeeAmount;
             unchecked {
-                providerFeeAmount = amount * _flashLoanFee.providerFeeRate / RATIO;
-                protocolFeeAmount = amount * _flashLoanFee.protocolFeeRate / RATIO;
+                providerFeeAmount = amount * _flashLoanFeeRate.providerFeeRate / RATIO;
+                protocolFeeAmount = amount * _flashLoanFeeRate.protocolFeeRate / RATIO;
                 require(
                     address(this).balance >= balanceBefore + providerFeeAmount + protocolFeeAmount, 
                     FlashLoanRepayFailed()
@@ -197,7 +198,7 @@ contract ORETH is IORETH, ERC20, Initializable, ReentrancyGuard, Ownable, GasMan
             IORETHStakeManager(_orETHStakeManager).accumYieldPool(providerFeeAmount);
             Address.sendValue(payable(_revenuePool), protocolFeeAmount);
 
-            emit FlashLoan(receiver, amount);
+            emit FlashLoan(receiver, amount, providerFeeAmount, protocolFeeAmount);
         }
     }
 

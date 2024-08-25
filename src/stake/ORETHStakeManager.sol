@@ -31,8 +31,8 @@ contract ORETHStakeManager is IORETHStakeManager, PositionOptionsToken, Initiali
     address public immutable OSETH;
     address public immutable REY;
 
-    uint256 private _burnedYTFee;
-    uint256 private _forceUnstakeFee;
+    uint256 private _burnedYTFeeRate;
+    uint256 private _forceUnstakeFeeRate;
     uint256 private _totalStaked;
     uint256 private _totalYieldPool;
     uint128 private _minLockupDays;
@@ -40,19 +40,19 @@ contract ORETHStakeManager is IORETHStakeManager, PositionOptionsToken, Initiali
 
     /**
      * @param owner - Address of owner
-     * @param gasManager - Address of gas manager
+     * @param gasManager_ - Address of gas manager
      * @param orETH - Address of orETH Token
      * @param osETH - Address of osETH Token
      * @param rey - Address of REY Token
      */
     constructor(
         address owner, 
-        address gasManager, 
+        address gasManager_, 
         address orETH, 
         address osETH, 
         address rey,
         string memory uri
-    ) ERC1155(uri) Ownable(owner) GasManagerable(gasManager) {
+    ) ERC1155(uri) Ownable(owner) GasManagerable(gasManager_) {
         ORETH = orETH;
         OSETH = osETH;
         REY = rey;
@@ -60,12 +60,12 @@ contract ORETHStakeManager is IORETHStakeManager, PositionOptionsToken, Initiali
 
 
     /** view **/
-    function forceUnstakeFee() external view override returns (uint256) {
-        return _forceUnstakeFee;
+    function burnedYTFeeRate() external view override returns (uint256) {
+        return _burnedYTFeeRate;
     }
 
-    function burnedYTFee() external view override returns (uint256) {
-        return _burnedYTFee;
+    function forceUnstakeFeeRate() external view override returns (uint256) {
+        return _forceUnstakeFeeRate;
     }
 
     function totalStaked() external view override returns (uint256) {
@@ -95,6 +95,26 @@ contract ORETHStakeManager is IORETHStakeManager, PositionOptionsToken, Initiali
 
     /** setter **/
     /**
+     * @param burnedYTFeeRate_ - Burn more YT when force unstake
+     */
+    function setBurnedYTFeeRate(uint256 burnedYTFeeRate_) public override onlyOwner {
+        require(burnedYTFeeRate_ <= RATIO, FeeRateOverflow());
+
+        _burnedYTFeeRate = burnedYTFeeRate_;
+        emit SetBurnedYTFeeRate(burnedYTFeeRate_);
+    }
+
+    /**
+     * @param forceUnstakeFeeRate_ - Force unstake fee rate
+     */
+    function setForceUnstakeFeeRate(uint256 forceUnstakeFeeRate_) public override onlyOwner {
+        require(forceUnstakeFeeRate_ <= RATIO, FeeRateOverflow());
+
+        _forceUnstakeFeeRate = forceUnstakeFeeRate_;
+        emit SetForceUnstakeFeeRate(forceUnstakeFeeRate_);
+    }
+
+    /**
      * @param minLockupDays_ - Min lockup days
      */
     function setMinLockupDays(uint128 minLockupDays_) public override onlyOwner {
@@ -110,43 +130,23 @@ contract ORETHStakeManager is IORETHStakeManager, PositionOptionsToken, Initiali
         emit SetMaxLockupDays(maxLockupDays_);
     }
 
-    /**
-     * @param forceUnstakeFee_ - Force unstake fee
-     */
-    function setForceUnstakeFee(uint256 forceUnstakeFee_) public override onlyOwner {
-        require(forceUnstakeFee_ <= RATIO, FeeOverflow());
-
-        _forceUnstakeFee = forceUnstakeFee_;
-        emit SetForceUnstakeFee(forceUnstakeFee_);
-    }
-
-    /**
-     * @param burnedYTFee_ - Burn more YT when force unstake
-     */
-    function setBurnedYTFee(uint256 burnedYTFee_) public override onlyOwner {
-        require(burnedYTFee_ <= RATIO, FeeOverflow());
-
-        _burnedYTFee = burnedYTFee_;
-        emit SetBurnedYTFee(burnedYTFee_);
-    }
-
     
     /** function **/
     /**
      * @dev Initializer
-     * @param forceUnstakeFee_ - Force unstake fee
-     * @param burnedYTFee_ - Burn more YT when force unstake
+     * @param burnedYTFeeRate_ - Burn more YT when force unstake
+     * @param forceUnstakeFeeRate_ - Force unstake fee
      * @param minLockupDays_ - Min lockup days
      * @param maxLockupDays_ - Max lockup days
      */
     function initialize(
-        uint256 forceUnstakeFee_, 
-        uint256 burnedYTFee_,
+        uint256 burnedYTFeeRate_,
+        uint256 forceUnstakeFeeRate_, 
         uint128 minLockupDays_, 
         uint128 maxLockupDays_
     ) external override initializer {
-        setForceUnstakeFee(forceUnstakeFee_);
-        setBurnedYTFee(burnedYTFee_);
+        setBurnedYTFeeRate(burnedYTFeeRate_);
+        setForceUnstakeFeeRate(forceUnstakeFeeRate_);
         setMinLockupDays(minLockupDays_);
         setMaxLockupDays(maxLockupDays_);
     }
@@ -161,7 +161,7 @@ contract ORETHStakeManager is IORETHStakeManager, PositionOptionsToken, Initiali
      * @notice User must have approved this contract to spend orETH
      */
     function stake(
-        uint128 amountInORETH, 
+        uint256 amountInORETH, 
         uint256 lockupDays, 
         address positionOwner, 
         address osETHTo, 
@@ -184,7 +184,7 @@ contract ORETHStakeManager is IORETHStakeManager, PositionOptionsToken, Initiali
         IREY(REY).mint(reyTo, amountInREY);
         amountInOSETH = calcOSETHAmount(amountInORETH, amountInREY);
         uint256 positionId = _nextId();
-        positions[positionId] = Position(ORETH, amountInORETH, uint128(amountInOSETH), deadline);
+        positions[positionId] = Position(ORETH, amountInORETH, amountInOSETH, deadline);
 
         _mint(positionOwner, positionId, amountInORETH, "");
         IERC20(ORETH).safeTransferFrom(msgSender, address(this), amountInORETH);
@@ -216,14 +216,14 @@ contract ORETHStakeManager is IORETHStakeManager, PositionOptionsToken, Initiali
         uint256 currentTime = block.timestamp;
         if (deadline > currentTime) {
             unchecked {
-                burnedREY = share * Math.ceilDiv(deadline - currentTime, DAY) * (RATIO + _burnedYTFee) / RATIO;
+                burnedREY = share * Math.ceilDiv(deadline - currentTime, DAY) * (RATIO + _burnedYTFeeRate) / RATIO;
             }
             IREY(REY).burn(msgSender, burnedREY);
             position.deadline = currentTime;
 
             uint256 fee;
             unchecked {
-                fee = share * _forceUnstakeFee / RATIO;
+                fee = share * _forceUnstakeFeeRate / RATIO;
                 share -= fee;
             }
             IORETH(ORETH).withdraw(fee);

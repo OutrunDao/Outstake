@@ -19,7 +19,7 @@ contract REY is IREY, ERC20, Initializable, Ownable, GasManagerable {
         _;
     }
 
-    constructor(address owner, address gasManager) ERC20("Outrun ETH yield token", "REY") Ownable(owner) GasManagerable(gasManager) {}
+    constructor(address owner, address gasManager_) ERC20("Outrun ETH yield token", "REY") Ownable(owner) GasManagerable(gasManager_) {}
 
     function ORETHStakeManager() external view override returns (address) {
         return _orETHStakeManager;

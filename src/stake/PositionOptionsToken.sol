@@ -13,8 +13,8 @@ abstract contract PositionOptionsToken is ERC1155Supply {
 
     struct Position {
         address stakedToken;
-        uint128 stakedAmount;
-        uint128 PTAmount;
+        uint256 stakedAmount;
+        uint256 PTAmount;
         uint256 deadline;
     }
 

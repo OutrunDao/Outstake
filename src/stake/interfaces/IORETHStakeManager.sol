@@ -10,25 +10,17 @@ interface IORETHStakeManager {
 
     error PermissionDenied();
 
-    error PositionClosed();
-
-    error ReachedDeadline(uint256 deadline);
-
     error MinStakeInsufficient(uint256 minStake);
 
     error InvalidLockupDays(uint256 minLockupDays, uint256 maxLockupDays);
-
-    error InvalidExtendDays();
-
-    error InvalidReduceDays();
     
-    error FeeOverflow();
+    error FeeRateOverflow();
     
 
     /** view **/
-    function forceUnstakeFee() external view returns (uint256);
+    function burnedYTFeeRate() external view returns (uint256);
 
-    function burnedYTFee() external view returns (uint256);
+    function forceUnstakeFeeRate() external view returns (uint256);
 
     function totalStaked() external view returns (uint256);
 
@@ -44,25 +36,25 @@ interface IORETHStakeManager {
 
 
     /** setter **/
+    function setBurnedYTFeeRate(uint256 _burnedYTFeeRate) external;
+
+    function setForceUnstakeFeeRate(uint256 _forceUnstakeFeeRate) external;
+
     function setMinLockupDays(uint128 _minLockupDays) external;
 
     function setMaxLockupDays(uint128 _maxLockupDays) external;
 
-    function setForceUnstakeFee(uint256 _forceUnstakeFee) external;
-
-    function setBurnedYTFee(uint256 _burnedYTFee) external;
-
 
     /** function **/
     function initialize(
-        uint256 forceUnstakeFee_, 
-        uint256 burnedYTFee_, 
+        uint256 burnedYTFeeRate_, 
+        uint256 forceUnstakeFeeRate_, 
         uint128 minLockupDays_, 
         uint128 maxLockupDays_
     ) external;
 
     function stake(
-        uint128 amountInORETH, 
+        uint256 amountInORETH, 
         uint256 lockupDays, 
         address positionOwner, 
         address osETHTo, 
@@ -89,11 +81,11 @@ interface IORETHStakeManager {
 
     event WithdrawYield(address indexed account, uint256 burnedREY, uint256 yieldAmount);
 
+    event SetBurnedYTFeeRate(uint256 burnedYTFeeRate);
+
+    event SetForceUnstakeFeeRate(uint256 forceUnstakeFeeRate);
+
     event SetMinLockupDays(uint128 minLockupDays);
 
     event SetMaxLockupDays(uint128 maxLockupDays);
-
-    event SetForceUnstakeFee(uint256 forceUnstakeFee);
-
-    event SetBurnedYTFee(uint256 burnedYTFee);
 }

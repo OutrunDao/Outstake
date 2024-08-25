@@ -21,7 +21,5 @@ interface IREY is IERC20 {
 
 	function setORETHStakeManager(address _stakeManager) external;
 
-	event Mint(address indexed _account, uint256 _amount);
-
 	event SetORETHStakeManager(address  _stakeManager);
 }

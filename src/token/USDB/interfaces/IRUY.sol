@@ -21,7 +21,5 @@ interface IRUY is IERC20 {
 
 	function setORUSDStakeManager(address _stakeManager) external;
 
-	event Mint(address indexed _account, uint256 _amount);
-
 	event SetORUSDStakeManager(address  _stakeManager);
 }
