@@ -11,7 +11,7 @@ import "../../utils/Initializable.sol";
 import "../../utils/IOutFlashCallee.sol";
 import "../../blast/IBlastPoints.sol";
 import "../../blast/GasManagerable.sol";
-import "../../stake/interfaces/IORETHStakeManager.sol";
+import "../../stake/interfaces/IStakeManager.sol";
 
 /**
  * @title Outrun ETH
@@ -159,10 +159,10 @@ contract ORETH is IORETH, ERC20, Initializable, ReentrancyGuard, Ownable, GasMan
             }
 
             _mint(_orETHStakeManager, nativeYield);
-            IORETHStakeManager(_orETHStakeManager).accumYieldPool(nativeYield);
+            IStakeManager(_orETHStakeManager).accumYieldPool(nativeYield);
 
             unchecked {
-                dayRate = nativeYield * DAY_RATE_RATIO / IORETHStakeManager(_orETHStakeManager).totalStaked();
+                dayRate = nativeYield * DAY_RATE_RATIO / IStakeManager(_orETHStakeManager).totalStaked();
             }
 
             emit AccumETHYield(nativeYield, dayRate);
@@ -195,7 +195,7 @@ contract ORETH is IORETH, ERC20, Initializable, ReentrancyGuard, Ownable, GasMan
             }
             
             _mint(_orETHStakeManager, providerFeeAmount);
-            IORETHStakeManager(_orETHStakeManager).accumYieldPool(providerFeeAmount);
+            IStakeManager(_orETHStakeManager).accumYieldPool(providerFeeAmount);
             Address.sendValue(payable(_revenuePool), protocolFeeAmount);
 
             emit FlashLoan(receiver, amount, providerFeeAmount, protocolFeeAmount);

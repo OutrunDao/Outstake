@@ -14,13 +14,14 @@ import "../token/USDB/interfaces/IORUSD.sol";
 import "../token/USDB/interfaces/IOSUSD.sol";
 import "../token/USDB/interfaces/IRUY.sol";
 import "../blast/GasManagerable.sol";
+import "./interfaces/IStakeManager.sol";
 import "./interfaces/IORUSDStakeManager.sol";
 
 /**
  * @title ORUSD Stake Manager Contract
  * @dev Handles Staking of orUSD
  */
-contract ORUSDStakeManager is IORUSDStakeManager, PositionOptionsToken, Initializable, Ownable, GasManagerable, AutoIncrementId {
+contract ORUSDStakeManager is IStakeManager, IORUSDStakeManager, PositionOptionsToken, Initializable, Ownable, GasManagerable, AutoIncrementId {
     using SafeERC20 for IERC20;
 
     address public constant USDB = 0x4200000000000000000000000000000000000022;
@@ -94,7 +95,7 @@ contract ORUSDStakeManager is IORUSDStakeManager, PositionOptionsToken, Initiali
         return IERC20(RUY).totalSupply() / _totalStaked;
     }
 
-    function calcOSUSDAmount(uint256 amountInORUSD, uint256 amountInRUY) public view override returns (uint256) {
+    function calcPTAmount(uint256 amountInORUSD, uint256 amountInRUY) public view override returns (uint256) {
         return amountInORUSD - (amountInRUY * _totalYieldPool / IERC20(RUY).totalSupply());
     }
 
@@ -188,7 +189,7 @@ contract ORUSDStakeManager is IORUSDStakeManager, PositionOptionsToken, Initiali
         }
 
         IRUY(RUY).mint(ruyTo, amountInRUY);
-        amountInOSUSD = calcOSUSDAmount(amountInORUSD, amountInRUY);
+        amountInOSUSD = calcPTAmount(amountInORUSD, amountInRUY);
         uint256 positionId = _nextId();
         positions[positionId] = Position(ORUSD, amountInORUSD, amountInOSUSD, deadline);
 
@@ -196,7 +197,7 @@ contract ORUSDStakeManager is IORUSDStakeManager, PositionOptionsToken, Initiali
         IERC20(ORUSD).safeTransferFrom(msgSender, address(this), amountInORUSD);
         IOSUSD(OSUSD).mint(osUSDTo, amountInOSUSD);
 
-        emit StakeORUSD(positionId, amountInORUSD, amountInOSUSD, amountInRUY, deadline);
+        emit Stake(positionId, amountInORUSD, amountInOSUSD, amountInRUY, deadline);
     }
 
     /**

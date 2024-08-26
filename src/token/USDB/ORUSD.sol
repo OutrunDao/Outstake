@@ -13,6 +13,7 @@ import "../../utils/IOutFlashCallee.sol";
 import "../../blast/IBlastPoints.sol";
 import "../../blast/GasManagerable.sol";
 import "../../blast/IERC20Rebasing.sol";
+import "../../stake/interfaces/IStakeManager.sol";
 import "../../stake/interfaces/IORUSDStakeManager.sol";
 
 /**
@@ -158,7 +159,7 @@ contract ORUSD is IORUSD, ERC20, Initializable, ReentrancyGuard, Ownable, GasMan
             _mint(_orUSDStakeManager, realYield);
 
             unchecked {
-                dayRate = realYield * DAY_RATE_RATIO / IORUSDStakeManager(_orUSDStakeManager).totalStaked();
+                dayRate = realYield * DAY_RATE_RATIO / IStakeManager(_orUSDStakeManager).totalStaked();
             }
 
             emit AccumUSDBYield(realYield, dayRate);
@@ -190,7 +191,7 @@ contract ORUSD is IORUSD, ERC20, Initializable, ReentrancyGuard, Ownable, GasMan
         }
         
         _mint(_orUSDStakeManager, providerFeeAmount);
-        IORUSDStakeManager(_orUSDStakeManager).accumYieldPool(providerFeeAmount);
+        IStakeManager(_orUSDStakeManager).accumYieldPool(providerFeeAmount);
         IERC20(USDB).safeTransfer(_revenuePool, protocolFeeAmount);
 
         emit FlashLoan(receiver, amount, providerFeeAmount, protocolFeeAmount);

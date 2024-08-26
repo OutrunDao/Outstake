@@ -14,13 +14,13 @@ import "../token/ETH/interfaces/IREY.sol";
 import "../token/ETH/interfaces/IORETH.sol";
 import "../token/ETH/interfaces/IOSETH.sol";
 import "../blast/GasManagerable.sol";
-import "./interfaces/IORETHStakeManager.sol";
+import "./interfaces/IStakeManager.sol";
 
 /**
  * @title ORETH Stake Manager Contract
  * @dev Handles Staking of orETH
  */
-contract ORETHStakeManager is IORETHStakeManager, PositionOptionsToken, Initializable, Ownable, GasManagerable, AutoIncrementId {
+contract ORETHStakeManager is IStakeManager, PositionOptionsToken, Initializable, Ownable, GasManagerable, AutoIncrementId {
     using SafeERC20 for IERC20;
 
     uint256 public constant RATIO = 10000;
@@ -88,7 +88,7 @@ contract ORETHStakeManager is IORETHStakeManager, PositionOptionsToken, Initiali
         return IERC20(REY).totalSupply() / _totalStaked;
     }
 
-    function calcOSETHAmount(uint256 amountInORETH, uint256 amountInREY) public view override returns (uint256) {
+    function calcPTAmount(uint256 amountInORETH, uint256 amountInREY) public view override returns (uint256) {
         return amountInORETH - (amountInREY * _totalYieldPool / IERC20(REY).totalSupply());
     }
 
@@ -182,7 +182,7 @@ contract ORETHStakeManager is IORETHStakeManager, PositionOptionsToken, Initiali
         }
 
         IREY(REY).mint(reyTo, amountInREY);
-        amountInOSETH = calcOSETHAmount(amountInORETH, amountInREY);
+        amountInOSETH = calcPTAmount(amountInORETH, amountInREY);
         uint256 positionId = _nextId();
         positions[positionId] = Position(ORETH, amountInORETH, amountInOSETH, deadline);
 
@@ -190,7 +190,7 @@ contract ORETHStakeManager is IORETHStakeManager, PositionOptionsToken, Initiali
         IERC20(ORETH).safeTransferFrom(msgSender, address(this), amountInORETH);
         IOSETH(OSETH).mint(osETHTo, amountInOSETH);
 
-        emit StakeORETH(positionId, amountInORETH, amountInOSETH, amountInREY, deadline);
+        emit Stake(positionId, amountInORETH, amountInOSETH, amountInREY, deadline);
     }
 
     /**

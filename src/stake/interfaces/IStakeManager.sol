@@ -2,9 +2,9 @@
 pragma solidity ^0.8.26;
 
 /**
- * @title IORETHStakeManager interface
+ * @title StakeManager interface
  */
-interface IORETHStakeManager {
+interface IStakeManager {
     /** error **/
     error ZeroInput();
 
@@ -32,7 +32,7 @@ interface IORETHStakeManager {
 
     function avgStakeDays() external view returns (uint256);
 
-    function calcOSETHAmount(uint256 amountInORETH, uint256 amountInREY) external view returns (uint256);
+    function calcPTAmount(uint256 amountInNativeYieldToken, uint256 amountInYT) external view returns (uint256);
 
 
     /** setter **/
@@ -54,12 +54,12 @@ interface IORETHStakeManager {
     ) external;
 
     function stake(
-        uint256 amountInORETH, 
+        uint256 stakedAmount, 
         uint256 lockupDays, 
         address positionOwner, 
-        address osETHTo, 
-        address reyTo
-    ) external returns (uint256 amountInOSETH, uint256 amountInREY);
+        address ptRecipient, 
+        address ytRecipient
+    ) external returns (uint256 amountInPT, uint256 amountInYT);
 
     function unstake(uint256 positionId, uint256 share) external;
 
@@ -69,23 +69,23 @@ interface IORETHStakeManager {
 
 
     /** event **/
-    event StakeORETH(
+    event Stake(
         uint256 indexed positionId,
-        uint256 amountInORETH,
-        uint256 amountInOSETH,
-        uint256 amountInREY,
+        uint256 amountInNativeYieldToken,
+        uint256 amountInPT,
+        uint256 amountInYT,
         uint256 deadline
     );
 
     event Unstake(
         uint256 indexed positionId, 
-        uint256 amountInORETH, 
-        uint256 burnedOSETH, 
-        uint256 burnedREY, 
+        uint256 amountInNativeYieldToken, 
+        uint256 amountInBurnedPT, 
+        uint256 amountInBurnedYT, 
         uint256 forceUnstakeFee
     );
 
-    event WithdrawYield(address indexed account, uint256 burnedREY, uint256 yieldAmount);
+    event WithdrawYield(address indexed account, uint256 amountInBurnedYT, uint256 yieldAmount);
 
     event SetBurnedYTFeeRate(uint256 burnedYTFeeRate);
 
