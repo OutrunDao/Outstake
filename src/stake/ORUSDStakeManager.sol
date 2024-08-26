@@ -219,6 +219,7 @@ contract ORUSDStakeManager is IORUSDStakeManager, PositionOptionsToken, Initiali
         }
 
         uint256 burnedRUY;
+        uint256 forceUnstakeFee;
         uint256 currentTime = block.timestamp;
         if (deadline > currentTime) {
             unchecked {
@@ -227,17 +228,16 @@ contract ORUSDStakeManager is IORUSDStakeManager, PositionOptionsToken, Initiali
             IRUY(RUY).burn(msgSender, burnedRUY);
             position.deadline = currentTime;
 
-            uint256 fee;
             unchecked {
-                fee = share * _forceUnstakeFeeRate / RATIO;
-                share -= fee;
+                forceUnstakeFee = share * _forceUnstakeFeeRate / RATIO;
+                share -= forceUnstakeFee;
             }
-            IORUSD(ORUSD).withdraw(fee);
-            IERC20(USDB).safeTransfer(IORUSD(ORUSD).revenuePool(), fee);
+            IORUSD(ORUSD).withdraw(forceUnstakeFee);
+            IERC20(USDB).safeTransfer(IORUSD(ORUSD).revenuePool(), forceUnstakeFee);
         }
         IERC20(ORUSD).safeTransfer(msgSender, share);
 
-        emit Unstake(positionId, share, burnedOSUSD, burnedRUY);
+        emit Unstake(positionId, share, burnedOSUSD, burnedRUY, forceUnstakeFee);
     }
 
     /**

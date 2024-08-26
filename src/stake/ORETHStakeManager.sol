@@ -213,6 +213,7 @@ contract ORETHStakeManager is IORETHStakeManager, PositionOptionsToken, Initiali
         }
         
         uint256 burnedREY;
+        uint256 forceUnstakeFee;
         uint256 currentTime = block.timestamp;
         if (deadline > currentTime) {
             unchecked {
@@ -221,17 +222,16 @@ contract ORETHStakeManager is IORETHStakeManager, PositionOptionsToken, Initiali
             IREY(REY).burn(msgSender, burnedREY);
             position.deadline = currentTime;
 
-            uint256 fee;
             unchecked {
-                fee = share * _forceUnstakeFeeRate / RATIO;
-                share -= fee;
+                forceUnstakeFee = share * _forceUnstakeFeeRate / RATIO;
+                share -= forceUnstakeFee;
             }
-            IORETH(ORETH).withdraw(fee);
-            Address.sendValue(payable(IORETH(ORETH).revenuePool()), fee);
+            IORETH(ORETH).withdraw(forceUnstakeFee);
+            Address.sendValue(payable(IORETH(ORETH).revenuePool()), forceUnstakeFee);
         }        
         IERC20(ORETH).safeTransfer(msgSender, share);
 
-        emit Unstake(positionId, share, burnedOSETH, burnedREY);
+        emit Unstake(positionId, share, burnedOSETH, burnedREY, forceUnstakeFee);
     }
 
     /**

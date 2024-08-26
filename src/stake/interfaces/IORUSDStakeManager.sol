@@ -81,7 +81,13 @@ interface IORUSDStakeManager {
         uint256 deadline
     );
 
-    event Unstake(uint256 indexed positionId, uint256 amountInORUSD, uint256 burnedOSUSD, uint256 burnedRUY);
+    event Unstake(
+        uint256 indexed positionId, 
+        uint256 amountInORUSD, 
+        uint256 burnedOSUSD, 
+        uint256 burnedRUY, 
+        uint256 forceUnstakeFee
+    );
 
     event WithdrawYield(address indexed account, uint256 burnedRUY, uint256 yieldAmount);
 

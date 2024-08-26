@@ -77,7 +77,13 @@ interface IORETHStakeManager {
         uint256 deadline
     );
 
-    event Unstake(uint256 indexed positionId, uint256 amountInORETH, uint256 burnedOSETH, uint256 burnedREY);
+    event Unstake(
+        uint256 indexed positionId, 
+        uint256 amountInORETH, 
+        uint256 burnedOSETH, 
+        uint256 burnedREY, 
+        uint256 forceUnstakeFee
+    );
 
     event WithdrawYield(address indexed account, uint256 burnedREY, uint256 yieldAmount);
 
