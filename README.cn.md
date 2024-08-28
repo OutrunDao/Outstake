@@ -34,7 +34,9 @@ _不仅仅是原生收益质押协议_
 
 用户质押 **WT** 时需要指定一个锁定时间从而铸造 **PT** 与 **YT**，**PT** 数量并不是按质押的 **WT** 来 1 : 1 铸造的，而是与质押的时间相关，或者说与铸造的 **YT** 数量相关，**Rebase 原生收益代币**的数量等于可转换的**原生代币的数量 (Native token amount)**，具体算法为：
 
-<figure><img src="../../.gitbook/assets/PTAmount.png" alt=""><figcaption></figcaption></figure>
+<p align="center">
+  <img src="./assets/PTAmount.png" alt="">
+</p>
 
 **YT redeemable value**（YT 可兑现价值）：销毁一个 YT 能赎回的原生收益。
 
@@ -55,7 +57,9 @@ _不仅仅是原生收益质押协议_
 
 对于**非 Rebase 原生收益代币，PT** 数量也不是按质押的**原生收益代币** 1 : 1 铸造的，而是与质押的时间（铸造的 **YT** 数量）以及**非 Rebase 原生收益代币**相对于**原生代币**的赎回比率相关，简单讲，先将**非 Rebase 原生收益代币**的数量转换为对应的**原生代币**的数量，然后再使用以下算法计算：
 
-<figure><img src="../../.gitbook/assets/PTAmount.png" alt=""><figcaption></figcaption></figure>
+<p align="center">
+  <img src="./assets/PTAmount.png" alt="">
+</p>
 
 **YT redeemable value**（**YT** 可兑现价值）：销毁一个 YT 能赎回的原生收益。
 
@@ -98,20 +102,26 @@ _不仅仅是原生收益质押协议_
 
 假设 **YieldPool** 中此时的积累的原生收益为 0，我们将 1 个 **YT** 锚定的 1 个**原生收益代币** 1 天所产生的原生收益设为 _**y**_。用户 _**A**_ 质押了 _**a**_ 个**原生收益代币**并锁定 _**m**_ 天，这会铸造 _**am**_ 个 **YT**，我们将此时其他用户看成一个整体，这个整体看作用户 _**B**_ 质押了 _**b**_ 个**原生收益代币**并锁定 _**n**_ 天，这会铸造 _**bn**_ 个 **YT**。
 
-在 **t** 天之后
+在 _**t**_ 天之后
 
-<figure><img src="./assets/Profit.jpg" alt="" width="563"><figcaption></figcaption></figure>
+<p align="center">
+  <img src="./assets/Profit.jpg" alt="" width="563">
+</p>
 
 用实际收益除以预期收益再减 1 可以得出无常盈亏率 **(IPnLR)**\
 _**IPnLR**_** = (Actual Earnings / Expected Earnings) - 1**
 
-<figure><img src="./assets/IPnLR.jpg" alt="" width="342"><figcaption></figcaption></figure>
+<p align="center">
+  <img src="./assets/IPnLR.jpg" alt="" width="342">
+</p>
 
 再用 _**IPnLR**_ 乘以各自的实际收益 _**aty**_ 与 _**bty**_ 可得各自的无常盈亏 _**IPnL**_\
 _**IPnLa = IPnLRa \* Expected Profit\_A**_\
 _**IPnLb = IPnLRb \* Expected Profit\_B**_
 
-<figure><img src="./assets/IPnL.jpg" alt="" width="375"><figcaption></figcaption></figure>
+<p align="center">
+  <img src="./assets/IPnL.jpg" alt="" width="375">
+</p>
 
 从上图可以得出，用户 **A** 的与用户 **B** 的无常盈亏守恒，如果用户 **A** 与 **B** 锁定的时间相同，则双方都没有无常盈亏。也就是说一个用户的无常盈亏和质押池中其他用户的加权平均天数相关。
 
