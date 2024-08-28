@@ -38,7 +38,9 @@ In **Blast L2**, **orETH (WT)** will also serve as **Wrapped ETH** in Outswap.
 
 When users stake **WT**, they need to specify a lock-up period to mint **PT** and **YT**. The quantity of **PT** minted is not on a 1:1 basis with the staked **WT** but is related to the **staking duration or the number of YT minted**. The quantity of **Rebase native yield token** equals the amount of **native tokens convertible** (Native token amount). The specific algorithm is:
 
-<figure><img src="./assets/PTAmount.png" alt=""><figcaption></figcaption></figure>
+<p align="center">
+  <img src="./assets/PTAmount.png" alt="">
+</p>
 
 **YT Redeemable Value:** The native yield that can be redeemed by burning one **YT**.
 
@@ -59,7 +61,9 @@ For staking **Non-Rebase native yield tokens**, the Outrun ecosystem mints two t
 
 For **Non-Rebase native yield tokens**, the quantity of **PT** is not minted on a 1:1 basis with the staked **Non-Rebase native yield tokens** but is related to the staking duration (number of **YT** minted) and the redemption ratio of the **Non-Rebase native yield token** relative to the native token. In simple terms, first convert the amount of **Non-Rebase native yield tokens** to the corresponding amount of native tokens, and then use the following algorithm to calculate:
 
-<figure><img src="./assets/PTAmount.png" alt=""><figcaption></figcaption></figure>
+<p align="center">
+  <img src="./assets/PTAmount.png" alt="">
+</p>
 
 **YT Redeemable Value:** The native yield that can be redeemed by burning one **YT**.
 
@@ -106,18 +110,24 @@ User A stakes **𝑎** native yield tokens and locks them for **𝑚** days, whi
 
 After **𝑡** days:
 
-<figure><img src="./assets/Profit.jpg" alt="" width="563"><figcaption></figcaption></figure>
+<p align="center">
+  <img src="./assets/Profit.jpg" alt="" width="563">
+</p>
 
 The **Impermanent Profit and Loss Ratio (**_**IPnLR**_**)** can be obtained by dividing the actual earnings by the expected earnings and then subtracting 1.\
 _**IPnLR = (Actual Earnings / Expected Earnings) - 1**_
 
-<figure><img src="./assets/IPnLR.jpg" alt="" width="342"><figcaption></figcaption></figure>
+<p align="center">
+  <img src="./assets/IPnLR.jpg" alt="" width="342">
+</p>
 
 The **impermanent profit and loss** **(**_**IPnL**_**)** can be obtained by multiplying each user's **impermanent profit and loss ratio** **(**_**IPnLR**_**)** by their respective expected earnings.\
 _**IPnLa = IPnLRa \* Expected Profit\_A**_\
 _**IPnLb = IPnLRb \* Expected Profit\_B**_
 
-<figure><img src="./assets/IPnL.jpg" alt="" width="375"><figcaption></figcaption></figure>
+<p align="center">
+  <img src="./assets/IPnL.jpg" alt="" width="375">
+</p>
 
 From the above figure, we can deduce that there is an impermanent profit and loss conservation between User _A_ and User _B_. If User _A_ and User _B_ lock up their assets for the same duration, both parties would experience no impermanent profit or loss. In other words, an individual user's impermanent profit and loss are correlated with the weighted average duration of other users in the staking pool.
 
