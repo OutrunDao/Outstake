@@ -175,9 +175,11 @@ contract ORUSDStakeManager is IStakeManager, IORUSDStakeManager, PositionOptions
         address ruyTo
     ) external override returns (uint256 amountInOSUSD, uint256 amountInRUY) {
         require(amountInORUSD >= MINSTAKE, MinStakeInsufficient(MINSTAKE));
+        uint256 minLockupDays_ = _minLockupDays;
+        uint256 maxLockupDays_ = _maxLockupDays;
         require(
-            lockupDays >= _minLockupDays && lockupDays <= _maxLockupDays, 
-            InvalidLockupDays(_minLockupDays, _maxLockupDays)
+            lockupDays >= minLockupDays_ && lockupDays <= maxLockupDays_, 
+            InvalidLockupDays(minLockupDays_, maxLockupDays_)
         );
 
         address msgSender = msg.sender;
