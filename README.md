@@ -14,7 +14,6 @@ _Not Only Native Yield Staking Protocol_
 
 + **Position Option Tokens**: These option tokens represent the right to redeem the native yield token at the end of its lock-up period. This option allows users to trade for a fixed interest rate without trading the **PT** itself, thereby enhancing capital efficiency.
 
-
 ## Stake Rebase Native Yield Tokens
 
 **Rebase native yield tokens** refer to native yield tokens that require manual claim of the yield or automatically rebase, such as **Blast ETH** and **Lido stETH**.
@@ -95,13 +94,13 @@ Thus, the process of **YT**’s redeemable value surpassing its theoretical valu
 
 **YT** is not only a tool for helping long-term stakers earn more yield but also a **truly fungible, universal yield token**. Additionally, it represents Web3's first **decentralized algorithmic stablecoin** anchored to **native yield rates**. In the competitive market, **YT** remains connected to these **native yield rates**. Looking ahead, Outrun will utilize **YT**’s unique features and community to develop even more **innovative products**.
 
-### The mathematical model of REY
+### The mathematical model of YT
 
 While **YT** may appear simple on the surface, the ability for **YT** to be freely traded and for any **YT** holder to redeem native yields at any time introduces a highly complex game-theoretic process and mathematical model.
 
 The following, we construct a **minimal model** to calculate impermanent profit and losses.
 
-Assuming that the accumulated native yield in the YieldPool is 0, and 1 YT is pegged to the yield produced by 1 native yield token over 1 day, which we denote as y.&#x20;
+Assuming that the accumulated native yield in the YieldPool is 0, and 1 YT is pegged to the yield produced by 1 native yield token over 1 day, which we denote as _**y**_.
 
 User A stakes **𝑎** native yield tokens and locks them for **𝑚** days, which will mint **𝑎𝑚** YTs. We will consider other users as a collective entity, referred to as User B, who stakes **𝑏** native yield tokens and locks them for **𝑛** days, which will mint **𝑏𝑛** YTs.
 
